@@ -13,3 +13,10 @@ Feature: CRUD Person dan Phone
 		Given Ambil jumlah record person saat ini
 		When Hapus person dengan id 1
 		Then Jumlah record person menjadi jumlah record awal - 1
+		
+	Scenario: Update Data Person
+		Given Akan dilakukan perubahan first name, last name, dan age pada person dengan id 2
+		When Update person dengan id 2, set firstName: Heni, lastName: Setyowati, age: 17
+		Then Record person dengan id 2 menjadi firstName: Heni, lastName: Setyowati, age: 17
+		
+	

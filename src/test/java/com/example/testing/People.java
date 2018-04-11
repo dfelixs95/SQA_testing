@@ -110,4 +110,42 @@ public class People {
 		JSONArray arrPhoneNumber = objPerson.getJSONArray("phones");
 		assertThat(arrPhoneNumber.length(),equalTo(jmlNoTelpAwal+jmlPenambahanNoTelp));
 	}
+	
+	
+	//update
+	
+	@Given("^Akan dilakukan perubahan first name, last name, dan age pada person dengan id (\\d+)$")
+	public void givenUpdatePerson(int personId) throws Throwable {}
+	
+	@When("^Update person dengan id (\\d+), set firstName: (.+), lastName: (.+), age: (\\d+)$")
+	public void whenUpdatePerson(int personId, String firstName, String lastName, int age) throws Throwable {
+		StringBuilder jsonStr = new StringBuilder();
+		jsonStr.append("{\"firstName\": \"" + firstName + "\",").
+				append("\"lastName\": \"" + lastName + "\",").
+				append("\"age\": " + age).
+				append("}");
+		
+		@SuppressWarnings("unused")
+		HttpResponse<JsonNode> jsonResponse = Unirest.put("http://localhost:8080/persons/update/"+personId)
+				  .header("Content-Type", "application/json")
+				  .header("Accept", "application/json")
+				  .body(jsonStr.toString())
+				  .asJson();
+	}
+	
+	@Then("^Record person dengan id (\\d+) menjadi firstName: (.+), lastName: (.+), age: (\\d+)$")
+	public void thenUpdatePerson(int personId, String expectedFirstName, String expectedLastName, int expectedAge) throws Throwable {
+		HttpResponse<JsonNode> jsonResponse = Unirest.get("http://localhost:8080/persons/"+personId)
+				.header("Accept", "application/json")
+				.asJson();
+		JSONObject objPerson = jsonResponse.getBody().getObject();
+		
+		String actualFirstName = objPerson.getString("firstName");
+		String actualLastName = objPerson.getString("lastName");
+		int actualAge = objPerson.getInt("age");
+		
+		assertThat(actualFirstName,equalTo(expectedFirstName));
+		assertThat(actualLastName,equalTo(expectedLastName));
+		assertThat(actualAge,equalTo(expectedAge));
+	}
 }
