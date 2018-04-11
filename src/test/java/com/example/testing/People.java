@@ -18,7 +18,7 @@ public class People {
 	int jmlRecordPersonAwal, jmlNoTelpAwal;
 	
 	@Given("^Ambil jumlah record person saat ini$")
-	public void givenAddPerson() throws Throwable {
+	public void givenAddDeletePerson() throws Throwable {
 		HttpResponse<JsonNode> jsonResponse = Unirest.get("http://localhost:8080/persons/all")
 				.header("Accept", "application/json")
 				.asJson();
@@ -53,6 +53,28 @@ public class People {
 				.asJson();
 		JSONArray arrPerson = jsonResponse.getBody().getArray();
 		assertThat(arrPerson.length(), equalTo(jmlRecordPersonAwal+jmlPenambahanRecord));
+	}
+	
+	@When("^Hapus person dengan id (\\d+)$")
+	public void whenDeletePerson(int personId) throws Throwable {
+		StringBuilder jsonStr = new StringBuilder();
+		jsonStr.append("{\"id\": ").append(personId).append("}");
+
+		@SuppressWarnings("unused")
+		HttpResponse<JsonNode> jsonResponse = Unirest.delete("http://localhost:8080/persons/delete/"+personId)
+				  .header("Content-Type", "application/json")
+				  .header("Accept", "application/json")
+				  .body(jsonStr.toString())
+				  .asJson();
+	}
+	
+	@Then("^Jumlah record person menjadi jumlah record awal \\- (\\d+)$")
+	public void thenDeletePerson(int jmlPenguranganRecord) throws Throwable {
+		HttpResponse<JsonNode> jsonResponse = Unirest.get("http://localhost:8080/persons/all")
+				.header("Accept", "application/json")
+				.asJson();
+		JSONArray arrPerson = jsonResponse.getBody().getArray();
+		assertThat(arrPerson.length(), equalTo(jmlRecordPersonAwal-jmlPenguranganRecord));
 	}
 	
 	@Given("^Ambil jumlah nomor telepon milik person dengan id (\\d+) saat ini$")
